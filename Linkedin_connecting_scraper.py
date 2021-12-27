@@ -1,17 +1,28 @@
 # Importing Modules
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+from time import sleep
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 import pandas as pd
 import requests
 import time
+import json
 from bs4 import BeautifulSoup
 
-linkedin_weblink = 'https://www.linkedin.com/search/results/people/?geoUrn=%5B%22101165590%22%2C%22102299470%22%2C%2290009496%22%2C%22102257491%22%5D&keywords=student%20at%20king%27s%20college%20london&network=%5B%22O%22%5D&origin=FACETED_SEARCH&page=7&schoolFilter=%5B%2212601%22%5D&sid=dJ3'
+linkedin_weblink = 'https://www.linkedin.com/search/results/people/?geoUrn=%5B%22101165590%22%5D&network=%5B%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&schoolFilter=%5B%2212731%22%2C%2212598%22%2C%2212691%22%2C%2212716%22%2C%2219926%22%2C%2212608%22%2C%2212682%22%5D&sid=SH9'
 
 # Launch Linkedin
-linkedin_page = webdriver.Chrome('/Users/baptistefernandez/Desktop/Python & Data Science/AtomProjects/Scraping Projects/chromedriver')
+linkedin_page = driver = webdriver.Chrome(ChromeDriverManager().install())
 linkedin_page.get(linkedin_weblink)
 time.sleep(1)
+
+with open('creds.json') as json_file:
+    data = json.load(json_file)
+    print(data)
+
+email = data['email']
+password = data['pass']
+
 
 # Accept Cookies
 linkedin_page.find_element_by_xpath('//*[@id="artdeco-global-alert-container"]/div[1]/section/div/div[2]/button[2]').click()
@@ -22,11 +33,11 @@ linkedin_page.find_element_by_xpath('/html/body/div[1]/main/p/a').click()
 time.sleep(1)
 
 # Send Email
-linkedin_page.find_element_by_xpath('//*[@id="username"]').send_keys('fernandez.baptiste1@gmail.com')
+linkedin_page.find_element_by_xpath('//*[@id="username"]').send_keys(email)
 time.sleep(1)
 
 # Send Password
-linkedin_page.find_element_by_xpath('//*[@id="password"]').send_keys('')
+linkedin_page.find_element_by_xpath('//*[@id="password"]').send_keys(password)
 time.sleep(1)
 
 # Click Login Button
