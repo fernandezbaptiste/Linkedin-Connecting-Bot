@@ -26,7 +26,7 @@ linkedin_page.find_element_by_xpath('//*[@id="username"]').send_keys('fernandez.
 time.sleep(1)
 
 # Send Password
-linkedin_page.find_element_by_xpath('//*[@id="password"]').send_keys('Jorkimien6996!')
+linkedin_page.find_element_by_xpath('//*[@id="password"]').send_keys('')
 time.sleep(1)
 
 # Click Login Button
