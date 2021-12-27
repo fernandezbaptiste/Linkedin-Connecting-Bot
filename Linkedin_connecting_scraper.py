@@ -3,12 +3,12 @@ from selenium import webdriver
 from time import sleep
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
-import pandas as pd
 import requests
 import time
 import json
 from bs4 import BeautifulSoup
 
+# Start link with the filter you chose
 linkedin_weblink = 'https://www.linkedin.com/search/results/people/?geoUrn=%5B%22101165590%22%5D&network=%5B%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&schoolFilter=%5B%2212731%22%2C%2212598%22%2C%2212691%22%2C%2212716%22%2C%2219926%22%2C%2212608%22%2C%2212682%22%5D&sid=SH9'
 
 # Launch Linkedin
@@ -16,10 +16,10 @@ linkedin_page = driver = webdriver.Chrome(ChromeDriverManager().install())
 linkedin_page.get(linkedin_weblink)
 time.sleep(1)
 
+# Import your credentials
 with open('creds.json') as json_file:
     data = json.load(json_file)
     print(data)
-
 email = data['email']
 password = data['pass']
 
@@ -50,20 +50,20 @@ try:
     time.sleep(1)
 except Exception as e:
     pass
-
 time.sleep(2)
 
 # Reading HTML
 html = linkedin_page.page_source
+time.sleep(5)
 
 # Very important to let it sleep for at least 3 seconds otherwise it does not return the HTML / LXML
-time.sleep(5)
 soup = BeautifulSoup(html, 'lxml')
+time.sleep(1)
 
 # Select all DIV type of codes
 all_span = soup.find_all('span')
 
-# Have it repeated 2 times for going on the next page
+# Deciding number of pages we run the automation on
 for i in range(5):
 
     #Scroll down to be able to load all the javascript with all HTML/XPATH information
@@ -81,11 +81,10 @@ for i in range(5):
 
     # Read HTML for finding the connect IDs
     html = linkedin_page.page_source
+    time.sleep(5)
 
     # Very important to let it sleep for at least 3 seconds otherwise it does not return the HTML / LXML
-    time.sleep(5)
     soup = BeautifulSoup(html, 'lxml')
-
     time.sleep(3)
     # Get all the connect IDs
     ids = [r['id'] for r in soup.find_all('button',{'class':'artdeco-button artdeco-button--2 artdeco-button--secondary ember-view'}) if r.get('id') is not None and r.text == '\n\n    Connect\n']
