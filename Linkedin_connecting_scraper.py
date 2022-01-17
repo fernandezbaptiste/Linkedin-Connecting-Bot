@@ -1,4 +1,4 @@
-# Importing Modules
+pyth# Importing Modules
 from selenium import webdriver
 from time import sleep
 from webdriver_manager.chrome import ChromeDriverManager
@@ -9,10 +9,10 @@ import json
 from bs4 import BeautifulSoup
 
 # Start link with the filter you chose
-linkedin_weblink = 'https://www.linkedin.com/search/results/people/?geoUrn=%5B%22101165590%22%5D&network=%5B%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&schoolFilter=%5B%2212731%22%2C%2212598%22%2C%2212691%22%2C%2212716%22%2C%2219926%22%2C%2212608%22%2C%2212682%22%5D&sid=SH9'
+linkedin_weblink = 'https://www.linkedin.com/search/results/people/?geoUrn=%5B%22101165590%22%5D&keywords=students%20at%20Imperial%20College%20London&network=%5B%22S%22%2C%22O%22%5D&origin=GLOBAL_SEARCH_HEADER&schoolFilter=%5B%2212691%22%2C%2212716%22%2C%2219926%22%2C%2212608%22%2C%2212682%22%2C%2212598%22%2C%2212731%22%5D&sid=IO5'
 
 # Launch Linkedin
-linkedin_page = driver = webdriver.Chrome(ChromeDriverManager().install())
+linkedin_page = webdriver.Chrome(ChromeDriverManager().install())
 linkedin_page.get(linkedin_weblink)
 time.sleep(1)
 
@@ -22,7 +22,6 @@ with open('creds.json') as json_file:
     print(data)
 email = data['email']
 password = data['pass']
-
 
 # Accept Cookies
 linkedin_page.find_element_by_xpath('//*[@id="artdeco-global-alert-container"]/div[1]/section/div/div[2]/button[2]').click()
@@ -64,7 +63,7 @@ time.sleep(1)
 all_span = soup.find_all('span')
 
 # Deciding number of pages we run the automation on
-for i in range(5):
+for i in range(50):
 
     #Scroll down to be able to load all the javascript with all HTML/XPATH information
     linkedin_page.execute_script("window.scrollTo(0, 300)")
@@ -112,22 +111,35 @@ for i in range(5):
         except Exception as e:
             print('\n\n', e, '\n\n')
 
-    #Scroll down because otherwise not able to find the "Next" button
-    linkedin_page.execute_script("window.scrollTo(0, 1000)")
-    time.sleep(3)
+    try:
+        #Scroll down because otherwise not able to find the "Next" button
+        linkedin_page.execute_script("window.scrollTo(0, 1000)")
+        time.sleep(3)
 
-    # Re-real main page HTML to get id for "Next page"
-    time.sleep(2)
-    html = linkedin_page.page_source
-    soup = BeautifulSoup(html, 'lxml')
-    time.sleep(2)
+        # Re-real main page HTML to get id for "Next page"
+        time.sleep(2)
+        html = linkedin_page.page_source
+        soup = BeautifulSoup(html, 'lxml')
+        time.sleep(2)
 
-    # Get ID for next page button
-    next_page_id = [r['id'] for r in soup.find_all('button',{'class':'artdeco-pagination__button artdeco-pagination__button--next artdeco-button artdeco-button--muted artdeco-button--icon-right artdeco-button--1 artdeco-button--tertiary ember-view'}) if r.get('id') is not None]
-    next_page_id = '//*[@id="'+ next_page_id[0] + '"]'
+        # Get ID for next page button
+        next_page_id = [r['id'] for r in soup.find_all('button',{'class':'artdeco-pagination__button artdeco-pagination__button--next artdeco-button artdeco-button--muted artdeco-button--icon-right artdeco-button--1 artdeco-button--tertiary ember-view'}) if r.get('id') is not None]
+        next_page_id = '//*[@id="'+ next_page_id[0] + '"]'
 
-    # Click on Next Page button
-    linkedin_page.find_element_by_xpath(next_page_id).click()
-    time.sleep(4)
+        # Click on Next Page button
+        linkedin_page.find_element_by_xpath(next_page_id).click()
+        time.sleep(4)
+
+    except Exception as e:
+        linkedin_page.execute_script("window.scrollTo(0, 1200)")
+        time.sleep(5)
+        html = linkedin_page.page_source
+        soup = BeautifulSoup(html, 'lxml')
+        time.sleep(2)
+        next_page_id = [r['id'] for r in soup.find_all('button',{'class':'artdeco-pagination__button artdeco-pagination__button--next artdeco-button artdeco-button--muted artdeco-button--icon-right artdeco-button--1 artdeco-button--tertiary ember-view'}) if r.get('id') is not None]
+        next_page_id = '//*[@id="'+ next_page_id[0] + '"]'
+        linkedin_page.find_element_by_xpath(next_page_id).click()
+        time.sleep(4)
+
 
 print('Your networking has been automated 🚀')
