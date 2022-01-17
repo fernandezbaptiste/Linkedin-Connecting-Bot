@@ -9,7 +9,7 @@ import json
 from bs4 import BeautifulSoup
 
 # Start link with the filter you chose
-linkedin_weblink = 'https://www.linkedin.com/search/results/people/?geoUrn=%5B%22101165590%22%5D&keywords=students%20at%20Imperial%20College%20London&network=%5B%22S%22%2C%22O%22%5D&origin=GLOBAL_SEARCH_HEADER&schoolFilter=%5B%2212691%22%2C%2212716%22%2C%2219926%22%2C%2212608%22%2C%2212682%22%2C%2212598%22%2C%2212731%22%5D&sid=IO5'
+linkedin_weblink = 'https://www.linkedin.com/search/results/people/?geoUrn=%5B%22101165590%22%5D&keywords=students%20at%20Imperial%20College%20London&network=%5B%22S%22%2C%22O%22%5D&origin=GLOBAL_SEARCH_HEADER&page=13&schoolFilter=%5B%2212691%22%2C%2212716%22%2C%2219926%22%2C%2212608%22%2C%2212682%22%2C%2212598%22%2C%2212731%22%5D&sid=hPw'
 
 # Launch Linkedin
 linkedin_page = webdriver.Chrome(ChromeDriverManager().install())
@@ -19,7 +19,6 @@ time.sleep(1)
 # Import your credentials
 with open('creds.json') as json_file:
     data = json.load(json_file)
-    print(data)
 email = data['email']
 password = data['pass']
 
@@ -51,20 +50,8 @@ except Exception as e:
     pass
 time.sleep(2)
 
-# Reading HTML
-html = linkedin_page.page_source
-time.sleep(5)
-
-# Very important to let it sleep for at least 3 seconds otherwise it does not return the HTML / LXML
-soup = BeautifulSoup(html, 'lxml')
-time.sleep(1)
-
-# Select all DIV type of codes
-all_span = soup.find_all('span')
-
 # Deciding number of pages we run the automation on
 for i in range(50):
-
     #Scroll down to be able to load all the javascript with all HTML/XPATH information
     linkedin_page.execute_script("window.scrollTo(0, 300)")
     time.sleep(1)
@@ -100,8 +87,6 @@ for i in range(50):
             html = linkedin_page.page_source
             soup = BeautifulSoup(html, 'lxml')
             send_id = [r['id'] for r in soup.find_all('button',{'class':'ml1 artdeco-button artdeco-button--2 artdeco-button--primary ember-view'}) if r.get('id') is not None and r.text == '\n\n    Send\n']
-
-            print('This is the send_id: ', send_id)
             send_id = '//*[@id="'+ send_id[0] + '"]'
 
             # Click on Send
@@ -131,6 +116,7 @@ for i in range(50):
         time.sleep(4)
 
     except Exception as e:
+        print('\n\n', e, '\n\n')
         linkedin_page.execute_script("window.scrollTo(0, 1200)")
         time.sleep(5)
         html = linkedin_page.page_source
