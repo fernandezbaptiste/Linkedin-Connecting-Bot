@@ -1,4 +1,4 @@
-pyth# Importing Modules
+# Importing Modules
 from selenium import webdriver
 from time import sleep
 from webdriver_manager.chrome import ChromeDriverManager
